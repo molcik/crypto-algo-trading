@@ -1,5 +1,5 @@
 # Crypto Algo Trading
-This project aims to provide control for automated trading on Coinbase platform. 
+This project aims to provide control for automated trading on multiple platforms. 
 
 # Roadmap
 ## In Progress
