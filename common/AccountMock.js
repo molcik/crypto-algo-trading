@@ -8,23 +8,23 @@ class AccountMock {
         this.book = []
     }
 
-    buy(rate, slice) {
-        if ((this.eurWallet * slice) < 1) return
-        const amount = slice * this.eurWallet
+    buy(rate, portion) {
+        if ((this.eurWallet * portion) < 1) return
+        const amount = portion * this.eurWallet
         this.bitcoinWallet += amount / rate
         this.eurWallet -= (amount + amount * this.fee)
         // logging
-        this.book.push({BTC: this.bitcoinWallet, EUR: this.eurWallet, equity: this.eurWallet + this.bitcoinWallet * rate, buy: true})
+        this.book.push({BTC: this.bitcoinWallet, EUR: this.eurWallet, equity: this.equity(rate), buy: true})
     }
 
-    sell(rate, slice) {
-        if  ((this.bitcoinWallet * slice) < 0.00000001) return
-        const amount = this.bitcoinWallet * slice
+    sell(rate, portion) {
+        if  ((this.bitcoinWallet * portion) < 0.00000001) return
+        const amount = this.bitcoinWallet * portion
         this.eurWallet += amount * rate
         this.eurWallet -= (amount * rate) * this.fee
         this.bitcoinWallet -= amount;
         // logging
-        this.book.push({BTC: this.bitcoinWallet, EUR: this.eurWallet, equity: this.eurWallet + this.bitcoinWallet * rate, sell: true})
+        this.book.push({BTC: this.bitcoinWallet, EUR: this.eurWallet, equity: this.equity(rate), sell: true})
     }
 
     eur() {
@@ -33,6 +33,10 @@ class AccountMock {
 
     btc() {
         return this.bitcoinWallet
+    }
+
+    equity(rate) {
+        return this.bitcoinWallet * rate + this.eurWallet
     }
 
     getBook() {

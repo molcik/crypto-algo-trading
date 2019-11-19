@@ -21,7 +21,10 @@ const downloadData = async (start, end, timeframe) => {
     do {
         tempEnd = start + 300 * timeframe * 1000
         tempEnd = tempEnd > end ? tempEnd = end : tempEnd = tempEnd
-        console.log(`Downloading data from: ${new Date(start).toISOString()} to ${new Date(tempEnd).toISOString()}`)
+        console.log(`
+    Downloading data 
+        from: ${new Date(start).toISOString()} 
+        to ${new Date(tempEnd).toISOString()}`)
         let newData = await publicClient.getProductHistoricRates('BTC-EUR',
             {
                 start: new Date(start).toISOString(),
@@ -29,7 +32,6 @@ const downloadData = async (start, end, timeframe) => {
                 granularity: timeframe
             },
         );
-        console.log(`Starting with ${newData[0]} ending with ${newData[newData.length - 1]}`)
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         start = tempEnd
@@ -37,6 +39,10 @@ const downloadData = async (start, end, timeframe) => {
         data.push(...newData.reverse())
     } while (tempEnd < end)
 
+    console.log(`
+    Downloaded data: 
+        first: ${data[0]}
+        last:  ${data[data.length - 1]}`)
     return data
 }
 
