@@ -1,7 +1,15 @@
 const { watson, winpes } = require('./strategy')
+const AccountMock = require('./AccountMock')
 
-let start = "2016-01-01"
-let end = "2019-11-15"
-let timeframe = 86400
+// const start = "2017-01-01"
+const start ="2017-12-15"
+// const end = "2018-11-15"
+const end = "2018-12-08"
 
-watson(start, end, timeframe)
+const timeframe = 86400
+const fee = 0.005
+const acc = new AccountMock(fee, 0, 1000)
+
+watson(acc, start, end, timeframe)
+
+

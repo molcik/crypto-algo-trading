@@ -1,13 +1,10 @@
 const indicators = require('technicalindicators')
 const { downloadData } = require('./utils')
-const Account = require('./mock')
 
-const watson = async (start, end, timeframe) => {
+const watson = async (acc, start, end, timeframe) => {
 
     // Coinbase Account Mock with 1000 EUR
-    const fee = 0.005
     const data = await downloadData(start, end, timeframe)
-    const acc = new Account(fee, 0, 1000)
 
     // Variables
     let sliceBuy = 0.01

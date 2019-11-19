@@ -22,7 +22,7 @@ const downloadData = async (start, end, timeframe) => {
         tempEnd = start + 300 * timeframe * 1000
         tempEnd = tempEnd > end ? tempEnd = end : tempEnd = tempEnd
         console.log(`Downloading data from: ${new Date(start).toISOString()} to ${new Date(tempEnd).toISOString()}`)
-        let newData = await publicClient.getProductHistoricRates('BTC-USD',
+        let newData = await publicClient.getProductHistoricRates('BTC-EUR',
             {
                 start: new Date(start).toISOString(),
                 end: new Date(tempEnd).toISOString(),

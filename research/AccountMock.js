@@ -1,5 +1,5 @@
 
-class Account {
+class AccountMock {
 
     constructor(fee, BTC, EUR) {
         this.fee = fee
@@ -41,4 +41,4 @@ class Account {
 
 }
 
-module.exports = Account
+module.exports = AccountMock
