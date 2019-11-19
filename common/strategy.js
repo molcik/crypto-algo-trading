@@ -1,9 +1,9 @@
 const indicators = require('technicalindicators')
 const { downloadData } = require('./utils')
 
-const offlineRunner = async (start, end, timeframe, acc, Strategy) => {
+const offlineRunner = async (start, end, timeframe, productId, acc, Strategy) => {
 
-    const data = await downloadData(start, end, timeframe)
+    const data = await downloadData(start, end, timeframe, productId)
     const strategy = new Strategy(acc, timeframe)
 
     console.log(`

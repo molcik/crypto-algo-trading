@@ -1,7 +1,7 @@
 const CoinbasePro = require('coinbase-pro');
 const publicClient = new CoinbasePro.PublicClient();
 
-const downloadData = async (start, end, timeframe) => {
+const downloadData = async (start, end, timeframe, productId) => {
     /**
      * time bucket start time
      * low lowest price during the bucket interval
@@ -25,7 +25,7 @@ const downloadData = async (start, end, timeframe) => {
     Downloading data 
         from: ${new Date(start).toISOString()} 
         to ${new Date(tempEnd).toISOString()}`)
-        let newData = await publicClient.getProductHistoricRates('BTC-EUR',
+        let newData = await publicClient.getProductHistoricRates(productId,
             {
                 start: new Date(start).toISOString(),
                 end: new Date(tempEnd).toISOString(),

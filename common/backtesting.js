@@ -10,6 +10,7 @@ const AccountMock = require('./AccountMock')
 const timeframe = 86400
 const fee = 0.005
 const acc = new AccountMock(fee, 0, 1000)
+const productId = 'BTC-EUR'
 
-offlineRunner(start, end, timeframe, acc, Watson)
+offlineRunner(start, end, timeframe, productId, acc, Watson)
 
