@@ -3,7 +3,7 @@ This project aims to provide control for automated trading on multiple platforms
 
 # Roadmap
 ## In Progress
-- [ ] research
+- [ ] research (backtesting)
 - [ ] strategies
 
 ## To Do
