@@ -6,18 +6,14 @@ const offlineRunner = async (start, end, timeframe, productId, acc, Strategy) =>
     const data = await downloadData(start, end, timeframe, productId)
     const strategy = new Strategy(acc, timeframe)
 
-    console.log(`
-    Start:
-    BTC: ${acc.bitcoinWallet}, EUR: ${acc.eurWallet}, equity: ${acc.equity(data[0][4])}
-    `)
-
     data.forEach(candle => {
+        acc.next(candle)
         strategy.next(candle)
     })
 
     console.log(`
     End:
-    BTC: ${acc.btc()}, EUR: ${acc.eur()}, equity: ${acc.equity(data[data.length - 1][4])}
+    equity: ${acc.getEquity()}
     `)
 
 }
@@ -44,15 +40,12 @@ class Watson extends Strategy {
     next(candle) {
         const open =  candle[3]
         const close = candle[4]
-        const equityPrev = this.equity
-        this.equity = this.acc.equity(close)
         const emaPrev = this.EMA
         this.ema = this.EMA.nextValue(close)
 
         // STOP LOSS
-        if (equityPrev && this.equity/equityPrev < this.stopLoss) {
-            this.acc.sell(close, 1)
-            return;
+        if (false) {
+
         }
 
         // down trend
@@ -69,12 +62,12 @@ class Watson extends Strategy {
 
         // open > close (down-trend)
         if (open > close) {
-            this.acc.buy(close, this.sliceBuy)
+            this.acc.buy(this.acc.getSizeForQuote(this.sliceBuy))
         }
 
         // open < close (up-trend)
         if (open < close) {
-            this.acc.sell(close, this.sliceSell)
+            this.acc.sell(this.acc.getSizeForBase(this.sliceSell))
         }
     }
 

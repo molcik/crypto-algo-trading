@@ -17,25 +17,25 @@ const sandboxAuthedClient = new CoinbasePro.AuthenticatedClient(
     sandboxURI
 );
 
-const buy = async (client, productId, size) => {
+const buy = async (size, productId, client) => {
     const params = {
         side: 'buy',
         type: 'market',
         size: size,
         product_id: productId,
     };
-    return await client.placeOrder(params);
+    return await (client || sandboxAuthedClient).placeOrder(params);
 
 }
 
-const sell = async (client, productId, size) => {
+const sell = async (size, productId, client) => {
     const params = {
         side: 'sell',
         type: 'market',
         size: size,
         product_id: productId,
     };
-    return await client.placeOrder(params);
+    return await (client || sandboxAuthedClient).placeOrder(params);
 }
 
 module.exports = {buy, sell, sandboxAuthedClient}

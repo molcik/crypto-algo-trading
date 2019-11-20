@@ -1,47 +1,63 @@
 
 class AccountMock {
 
-    constructor(fee, BTC, EUR) {
+    constructor(fee, base, quote) {
         this.fee = fee
-        this.bitcoinWallet = BTC
-        this.eurWallet = EUR
+        this.wallet = {
+            base: base,
+            quote: quote
+        }
         this.book = []
+        this.positions = []
     }
 
-    buy(rate, portion) {
-        if ((this.eurWallet * portion) < 1) return
-        const amount = portion * this.eurWallet
-        this.bitcoinWallet += amount / rate
-        this.eurWallet -= (amount + amount * this.fee)
-        // logging
-        this.book.push({BTC: this.bitcoinWallet, EUR: this.eurWallet, equity: this.equity(rate), buy: true})
+    next(candle) {
+        this.book.push(candle)
     }
 
-    sell(rate, portion) {
-        if  ((this.bitcoinWallet * portion) < 0.00000001) return
-        const amount = this.bitcoinWallet * portion
-        this.eurWallet += amount * rate
-        this.eurWallet -= (amount * rate) * this.fee
-        this.bitcoinWallet -= amount;
-        // logging
-        this.book.push({BTC: this.bitcoinWallet, EUR: this.eurWallet, equity: this.equity(rate), sell: true})
+    buy(size) {
+        console.log(size)
+        if (size > this.wallet.quote || size < 1) return
+        this.wallet.base += size / this.getClose()
+        this.wallet.quote -= (size + size * this.fee)
     }
 
-    eur() {
-        return this.eurWallet
+    sell(size) {
+        console.log(size)
+        if  (size > this.wallet.base || size < 0.00000001) return
+        this.wallet.quote += size * this.getClose()
+        this.wallet.quote -= (size * this.getClose()) * this.fee
+        this.wallet.base -= size;
     }
 
-    btc() {
-        return this.bitcoinWallet
+    getSizeForQuote(slice) {
+        return this.wallet.quote * slice
     }
 
-    equity(rate) {
-        return this.bitcoinWallet * rate + this.eurWallet
+    getSizeForBase(slice) {
+        return this.wallet.base * slice
     }
 
-    getBook() {
-        return this.book
+    stop() {
+
     }
+
+    getQuote() {
+        return this.wallet.quote
+    }
+
+    getBase() {
+        return this.wallet.base
+    }
+
+    getEquity() {
+        return this.wallet.base * this.getClose() + this.wallet.quote
+    }
+
+    getClose() {
+        return this.book[this.book.length - 1][4]
+    }
+
 
 }
 
