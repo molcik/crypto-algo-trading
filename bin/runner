@@ -1,0 +1,38 @@
+const { downloadData } = require('../common/utils')
+const { WatsonStrategy } = require('../common/WatsonStrategy')
+const coinbase = require('../services/coinbase')
+
+// get historic data till now
+const baseId = "BTC"
+const quoteId = "EUR"
+const productId = `${baseId}-${quoteId}`
+const timeFrame = 86400
+const start = new Date()
+const end = new Date()
+const buffer = 26
+const strategy = new WatsonStrategy(timeFrame, buffer, productId)
+
+main = async () => {
+
+    const data = await downloadData(start, end, timeFrame, buffer)
+    const base = await coinbase.getWallet(baseId)
+    const quote = await coinbase.getWallet(quoteId)
+
+    data.forEach(candle => {
+        strategy.next(candle, base.available, quote.available)
+    })
+
+    console.log(strategy.getAdvice(), strategy.getStopAdvice())
+
+    try {
+        await coinbase.cancelAll()
+        await coinbase.placeOrder(strategy.getAdvice())
+        await coinbase.placeOrder(strategy.getStopAdvice())
+    } catch (e) {
+        console.log(e.stack)
+        await coinbase.cancelAll()
+    }
+
+}
+
+main()

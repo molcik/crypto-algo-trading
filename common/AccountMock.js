@@ -9,44 +9,59 @@ class AccountMock {
         }
         this.book = []
         this.positions = []
+        this.stopLossPrice = 0
+        this.minEquity = quote
+        this.maxEquity = quote
     }
 
     next(candle) {
         this.book.push(candle)
+        // Stop Loss
+        if (this.getClose() < this.stopLossPrice) {
+            this.sell(this.getSizeForBase(1))
+            this.stopLossPrice = 0
+        }
+        this.getEquity() < this.minEquity ? this.minEquity = this.getEquity() : null
+        this.getEquity() > this.maxEquity ? this.maxEquity = this.getEquity() : null
+    }
+    
+    placeOrder(params) {
+        if (!params) return
+        switch (params.side) {
+            case "sell":
+                this.sell(params.size)
+            case "buy":
+                this.buy(params.size)
+            default:
+        }
     }
 
     buy(size) {
-        console.log(size)
-        if (size > this.wallet.quote || size < 1) return
-        this.wallet.base += size / this.getClose()
-        this.wallet.quote -= (size + size * this.fee)
+        if (!size) return
+        if (size < 0.00100000) return
+        if (size * this.getClose() > this.wallet.quote) return
+        this.wallet.base += size
+        this.wallet.quote -= (size * this.getClose() + size * this.getClose() * this.fee)
     }
 
     sell(size) {
-        console.log(size)
-        if  (size > this.wallet.base || size < 0.00000001) return
+        if (!size) return
+        if (size < 0.00100000) return
+        if (size > this.wallet.base) return
         this.wallet.quote += size * this.getClose()
         this.wallet.quote -= (size * this.getClose()) * this.fee
         this.wallet.base -= size;
     }
 
-    getSizeForQuote(slice) {
-        return this.wallet.quote * slice
+    setStopLoss(ratio) {
+        this.stopLossPrice = this.getClose() * ratio
     }
 
-    getSizeForBase(slice) {
-        return this.wallet.base * slice
-    }
-
-    stop() {
-
-    }
-
-    getQuote() {
+    getQuoteBalance() {
         return this.wallet.quote
     }
 
-    getBase() {
+    getBaseBalance() {
         return this.wallet.base
     }
 
@@ -58,6 +73,15 @@ class AccountMock {
         return this.book[this.book.length - 1][4]
     }
 
+    getStats() {
+        console.log(
+        `
+        Min:    ${this.minEquity}
+        Max:    ${this.maxEquity}
+        ____________________________
+        Equity: ${this.getEquity()}
+        `)
+    }
 
 }
 

@@ -1,7 +1,21 @@
 const CoinbasePro = require('coinbase-pro');
 const publicClient = new CoinbasePro.PublicClient();
 
-const downloadData = async (start, end, timeframe, productId) => {
+const offlineRunner = async (start, end, timeframe, buffer, productId, acc, Strategy) => {
+
+    const data = await downloadData(start, end, timeframe, buffer, productId)
+    const strategy = new Strategy(timeframe, buffer, productId)
+
+    data.forEach(candle => {
+        acc.next(candle)
+        acc.placeOrder(strategy.next(candle, acc.getBaseBalance(), acc.getQuoteBalance()))
+    })
+
+    acc.getStats()
+
+}
+
+const downloadData = async (start, end, timeframe, buffer, productId) => {
     /**
      * time bucket start time
      * low lowest price during the bucket interval
@@ -13,7 +27,7 @@ const downloadData = async (start, end, timeframe, productId) => {
      * [time,           low,    high,       open        close ,     volume]
      * [ 1565654400,    10746,  11438.39,   11389.25,   10854.92,   12500.34295603 ],
      */
-    start = new Date(start).getTime()
+    start = new Date(start).getTime() - buffer * timeframe * 1000
     end = new Date(end).getTime()
     let tempEnd;
     let data = []
@@ -21,10 +35,12 @@ const downloadData = async (start, end, timeframe, productId) => {
     do {
         tempEnd = start + 300 * timeframe * 1000
         tempEnd = tempEnd > end ? tempEnd = end : tempEnd = tempEnd
+        /*
         console.log(`
-    Downloading data 
+    Downloading data
         from: ${new Date(start).toISOString()} 
         to ${new Date(tempEnd).toISOString()}`)
+        */
         let newData = await publicClient.getProductHistoricRates(productId,
             {
                 start: new Date(start).toISOString(),
@@ -39,11 +55,13 @@ const downloadData = async (start, end, timeframe, productId) => {
         data.push(...newData.reverse())
     } while (tempEnd < end)
 
+    /*
     console.log(`
     Downloaded data: 
         first: ${data[0]}
         last:  ${data[data.length - 1]}`)
+        */
     return data
 }
 
-module.exports = { downloadData }
+module.exports = { downloadData, offlineRunner }
