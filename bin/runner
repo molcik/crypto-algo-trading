@@ -22,12 +22,13 @@ main = async () => {
         strategy.next(candle, base.available, quote.available)
     })
 
-    console.log(strategy.getAdvice(), strategy.getStopAdvice())
-
     try {
-        await coinbase.cancelAll()
-        await coinbase.placeOrder(strategy.getAdvice())
-        await coinbase.placeOrder(strategy.getStopAdvice())
+        const cancel = await coinbase.cancelAll()
+        console.log(cancel)
+        const advice = await coinbase.placeOrder(strategy.getAdvice())
+        console.log(advice)
+        const stop = await coinbase.placeOrder(strategy.getStopAdvice())
+        console.log(stop)
     } catch (e) {
         console.log(e.stack)
         await coinbase.cancelAll()

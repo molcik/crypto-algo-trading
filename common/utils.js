@@ -8,7 +8,11 @@ const offlineRunner = async (start, end, timeframe, buffer, productId, acc, Stra
 
     data.forEach(candle => {
         acc.next(candle)
-        acc.placeOrder(strategy.next(candle, acc.getBaseBalance(), acc.getQuoteBalance()))
+        strategy.next(candle, acc.getBaseBalance(), acc.getQuoteBalance())
+        // acc.cancelAll()
+        acc.placeOrder(strategy.getAdvice())
+        acc.placeOrder(strategy.getStopAdvice())
+        acc.placeOrder()
     })
 
     acc.getStats()
