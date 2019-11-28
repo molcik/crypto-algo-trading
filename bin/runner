@@ -14,7 +14,7 @@ const strategy = new WatsonStrategy(timeFrame, buffer, productId)
 
 main = async () => {
 
-    const data = await downloadData(start, end, timeFrame, buffer)
+    const data = await downloadData(start, end, timeFrame, 2 * buffer)
     const base = await coinbase.getWallet(baseId)
     const quote = await coinbase.getWallet(quoteId)
 
@@ -23,12 +23,17 @@ main = async () => {
     })
 
     try {
+        // Cancel all pending orders
         const cancel = await coinbase.cancelAll()
-        console.log(cancel)
+        console.log("cancel: ", cancel)
+        // Place buy/sell order
         const advice = await coinbase.placeOrder(strategy.getAdvice())
-        console.log(advice)
-        const stop = await coinbase.placeOrder(strategy.getStopAdvice())
-        console.log(stop)
+        console.log("advice: ",advice)
+        // Place stop-loss when buy order is placed
+        if (advice.side === "buy") {
+            const stop = await coinbase.placeOrder(strategy.getStopAdvice())
+            console.log("stop: ",stop)
+        }
     } catch (e) {
         console.log(e.stack)
         await coinbase.cancelAll()

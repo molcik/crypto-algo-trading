@@ -44,7 +44,7 @@ class WatsonStrategy extends Strategy {
         // BUY: open > close (micro down-trend)
         if (open > close) {
             const size = this.getSizeForQuote(this.sliceBuy, quoteBalance, close)
-            const stopLossSize = this.getSizeForBase(1, baseBalance)
+            const stopLossSize = this.getSizeForBase(1, baseBalance + size)
             this.setBuyAdvice(size)
             this.setStopLossAdvice(stopLossSize, close * this.stopLoss, close * this.stopLoss * 0.9)
         }
@@ -53,7 +53,7 @@ class WatsonStrategy extends Strategy {
         if (open < close) {
             const size = this.getSizeForBase(this.sliceSell, baseBalance)
             this.setSellAdvice(size)
-            // this.setStopLossAdvice(null, null, null)
+            this.setStopLossAdvice(null, null, null)
         }
 
         return this.advice
@@ -72,8 +72,8 @@ class WatsonStrategy extends Strategy {
             side: 'sell',
             type: 'limit',
             size: size,
-            stop_price: stopPrice,
-            price: price,
+            stop_price: stopPrice ? Math.round(stopPrice * 100)/100 : null,
+            price: price ? Math.round(price * 100)/100 : null,
             stop: 'loss',
             product_id: this.productId,
         }
